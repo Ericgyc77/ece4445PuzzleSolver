@@ -1,10 +1,33 @@
 import cv2
+import numpy as np
+import time
 
 from PIL import Image
 
 from util import get_limits
 
-cap = cv2.VideoCapture(0) # Laptop webcam
+cap = cv2.VideoCapture(1) # Laptop webcam
+
+# Check if the camera is opened successfully
+if not cap.isOpened():
+    print("Error: Camera is not available")
+    exit()
+else:
+    print("Camera found in currently selected slot!")
+    
+start_time = time.time()
+while True:
+    print(time.time())
+    if time.time() - start_time > 8:
+        print("Error: No camera found within 8 seconds")
+        cap.release()
+        cv2.destroyAllWindows()
+        exit()
+    
+    ret, frame = cap.read()
+    if ret:
+        print("Frame found!")
+        break  # Exit the while loop if the frame is read successfully
 
 orange = [0, 165, 255]  # orange in BGR colorspace
 
@@ -19,19 +42,24 @@ while True:
     
     mask = cv2.inRange(hsvImage, lowerLimit, upperLimit)
     
-    mask_ = Image.fromarray(mask) # inbetween function
+    # Find contours in the mask
+    contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     
-    bbox = mask_.getbbox() # enclose the masked object with a box, array with four points [x1, y1, x2, y2]
+    # Filter out small contours
+    min_area = 60  # Minimum area of contour to be considered, adjust as needed
+    filtered_contours = [cnt for cnt in contours if cv2.contourArea(cnt) > min_area]
     
-    if bbox is not None:
-        x1, y1, x2, y2 = bbox # grab locations of bounding box
-
-        # cv2.rectangle(frame, top left, bottom right, color, thickness)
-        frame = cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 5)
-        
-    print(bbox)
+    # Create a new mask with only the large contours
+    filtered_mask = np.zeros_like(mask)
+    cv2.drawContours(filtered_mask, filtered_contours, -1, (255), thickness=cv2.FILLED)
     
-    cv2.imshow('frame', mask)
+    # Find the bounding box from the filtered mask
+    x, y, w, h = cv2.boundingRect(filtered_mask)
+    if w > 0 and h > 0:
+        frame = cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 5)
+        # print((x, y, x + w, y + h))
+    
+    cv2.imshow('frame', filtered_mask)
     
     cv2.imshow('frame2', frame)
     
