@@ -8,8 +8,8 @@ def get_limits(color):
     hue = hsvC[0][0][0]  # Get the hue value
     
     # Feed slight error differential
-    lowerLimit = hsvC[0][0][0] - 7, 100, 100
-    upperLimit = hsvC[0][0][0] + 7, 255, 255
+    lowerLimit = hsvC[0][0][0] - 6, 100, 100
+    upperLimit = hsvC[0][0][0] + 6, 255, 255
     
     lowerLimit = np.array(lowerLimit, dtype=np.uint8)
     upperLimit = np.array(upperLimit, dtype=np.uint8)
