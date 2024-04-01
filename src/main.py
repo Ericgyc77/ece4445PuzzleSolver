@@ -6,7 +6,7 @@ from util import get_limits
 
 cap = cv2.VideoCapture(0) # Laptop webcam
 
-orange = [0, 165, 255]  # yellow in BGR colorspace
+orange = [0, 165, 255]  # orange in BGR colorspace
 
 # OpenCV interprets colors using BGR colorspace instead of RGB for some reason
 
@@ -31,7 +31,9 @@ while True:
         
     print(bbox)
     
-    cv2.imshow('frame', frame)
+    cv2.imshow('frame', mask)
+    
+    cv2.imshow('frame2', frame)
     
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
