@@ -34,12 +34,14 @@ while True:
 
 colors = {
     "red" : ([0, 0, 255], [0, 0, 200], "red"), # Detect red, draw bounding box in dark red
-    # "blue" : ([255, 128, 0], [255, 255, 0], "blue"), # Detect blue, draw bounding box in cyan (WORKING)
-    "green" : ([0, 40, 0], [0, 105, 0], "green"), # Detect green, draw bounding box in green 
+    "blue" : ([255, 128, 0], [255, 100, 0], "blue"), # Detect blue, draw bounding box in cyan (WORKING)
+    "cyan" : ([255, 255, 0], [255, 220, 0], "cyan"),
+    "green" : ([0, 40, 0], [0, 105, 0], "green"), # Detect green, draw bounding box in green (HALF WORKING)
     "lime" : ([0, 255, 0], [0, 213, 0], "lime"), # Detect lime, draw bounding box in darker lime (WORKING)
     "yellow" : ([0, 255, 255], [0, 200, 200], "yellow"), # Detect yellow, draw bounding box in darker yellow (WORKING)
     "orange" : ([0, 165, 255], [0, 69, 255], "orange"), # Detect orange, draw bounding box in darker orange (WORKING)
-    "violet" : ([255, 0, 127], [148, 0, 211], "violet"), # Detect violet, draw bounding box in dark violet (WORKING)
+    "violet" : ([230, 0, 255], [148, 0, 211], "violet"), # Detect violet, draw bounding box in dark violet (WORKING)
+    "magenta" : ([255, 0, 180], [255, 0, 150], "magenta") 
 }
 
 
