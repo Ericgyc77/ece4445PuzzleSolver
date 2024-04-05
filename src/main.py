@@ -4,9 +4,9 @@ import time
 
 from PIL import Image
 
-from util import get_limits
+from util import get_hsv_limits
 
-cap = cv2.VideoCapture(0) # Webcam, needs to be changed from PC to laptop
+cap = cv2.VideoCapture(1) # Webcam, needs to be changed from PC to laptop
 
 # Check if the camera is opened successfully
 if not cap.isOpened():
@@ -35,13 +35,25 @@ while True:
 colors = {
     "red" : ([0, 0, 255], [0, 0, 200], "red"), # Detect red, draw bounding box in dark red
     "blue" : ([255, 128, 0], [255, 100, 0], "blue"), # Detect blue, draw bounding box in cyan (WORKING)
-    "cyan" : ([255, 255, 0], [255, 220, 0], "cyan"),
+    "cyan" : ([255, 255, 0], [255, 220, 0], "cyan"), 
     "green" : ([0, 40, 0], [0, 105, 0], "green"), # Detect green, draw bounding box in green (HALF WORKING)
     "lime" : ([0, 255, 0], [0, 213, 0], "lime"), # Detect lime, draw bounding box in darker lime (WORKING)
     "yellow" : ([0, 255, 255], [0, 200, 200], "yellow"), # Detect yellow, draw bounding box in darker yellow (WORKING)
     "orange" : ([0, 165, 255], [0, 69, 255], "orange"), # Detect orange, draw bounding box in darker orange (WORKING)
     "violet" : ([230, 0, 255], [148, 0, 211], "violet"), # Detect violet, draw bounding box in dark violet (WORKING)
     "magenta" : ([255, 0, 180], [255, 0, 150], "magenta") 
+}
+
+color_hsv_ranges = {
+    "red": {'hue': 0, 'saturation_range': (150, 255), 'value_range': (50, 255), 'hue_margin': 5, 'bbox_color': [0, 0, 200]},
+    "blue": {'hue': 120, 'saturation_range': (150, 255), 'value_range': (50, 255), 'hue_margin': 5, 'bbox_color': [255, 100, 0]},
+    "cyan": {'hue': 90, 'saturation_range': (150, 255), 'value_range': (50, 255), 'hue_margin': 5, 'bbox_color': [255, 220, 0]},
+    "green": {'hue': 60, 'saturation_range': (150, 255), 'value_range': (50, 255), 'hue_margin': 5, 'bbox_color': [0, 105, 0]},
+    "lime": {'hue': 75, 'saturation_range': (150, 255), 'value_range': (50, 255), 'hue_margin': 5, 'bbox_color': [0, 213, 0]},
+    "yellow": {'hue': 30, 'saturation_range': (150, 255), 'value_range': (50, 255), 'hue_margin': 5, 'bbox_color': [0, 200, 200]},
+    "orange": {'hue': 15, 'saturation_range': (150, 255), 'value_range': (50, 255), 'hue_margin': 5, 'bbox_color': [0, 69, 255]},
+    "violet": {'hue': 270, 'saturation_range': (150, 255), 'value_range': (50, 255), 'hue_margin': 5, 'bbox_color': [148, 0, 211]},
+    "magenta": {'hue': 300, 'saturation_range': (150, 255), 'value_range': (50, 255), 'hue_margin': 5, 'bbox_color': [255, 0, 150]}
 }
 
 
@@ -56,25 +68,27 @@ while True:
     
     # find the limits of all colors
     # create all the masks needed
-    for color_name, (bgr, bbox_color, name) in colors.items():
-        
-        lowerLimit, upperLimit = get_limits(color = bgr)
-        
+    for color_name, color_info in color_hsv_ranges.items():
+        lowerLimit, upperLimit = get_hsv_limits(color_info['hue'],
+                                                color_info['saturation_range'],
+                                                color_info['value_range'],
+                                                color_info['hue_margin'])
         mask = cv2.inRange(hsvImage, lowerLimit, upperLimit)
     
         # Find contours in the mask
         contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         # Filter out small contours
-        min_area = 75  # Minimum area of contour to be considered, adjust as needed
+        min_area = 50  # Minimum area of contour to be considered, adjust as needed
         found = False
         for cnt in contours:
             if cv2.contourArea(cnt) > min_area:
                 found = True
                 x, y, w, h = cv2.boundingRect(cnt)
+                bbox_color = color_info['bbox_color']  # Access the bbox_color for the current color
                 frame = cv2.rectangle(frame, (x, y), (x + w, y + h), bbox_color, 3)
                 
         if found:
-            print(f"{name.capitalize()} has been found")
+            print(f"{color_name.capitalize()} has been found")
     
     
     
