@@ -6,7 +6,9 @@ from PIL import Image
 
 from util import get_hsv_limits
 
-cap = cv2.VideoCapture(1) # Webcam, needs to be changed from PC to laptop
+cap = cv2.VideoCapture(0) # Webcam, needs to be changed from PC to laptop
+cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
+cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
 
 # Check if the camera is opened successfully
 if not cap.isOpened():
@@ -29,88 +31,59 @@ while True:
         print("Frame found!")
         break  # Exit the while loop if the frame is read successfully
 
-
-# Colors dictionary, first entry -> BGR colorspace, second entry -> RGB colorspace (for bounding boxes)
-
-colors = {
-    "red" : ([0, 0, 255], [0, 0, 200], "red"), # Detect red, draw bounding box in dark red
-    "blue" : ([255, 128, 0], [255, 100, 0], "blue"), # Detect blue, draw bounding box in cyan (WORKING)
-    "cyan" : ([255, 255, 0], [255, 220, 0], "cyan"), 
-    "green" : ([0, 40, 0], [0, 105, 0], "green"), # Detect green, draw bounding box in green (HALF WORKING)
-    "lime" : ([0, 255, 0], [0, 213, 0], "lime"), # Detect lime, draw bounding box in darker lime (WORKING)
-    "yellow" : ([0, 255, 255], [0, 200, 200], "yellow"), # Detect yellow, draw bounding box in darker yellow (WORKING)
-    "orange" : ([0, 165, 255], [0, 69, 255], "orange"), # Detect orange, draw bounding box in darker orange (WORKING)
-    "violet" : ([230, 0, 255], [148, 0, 211], "violet"), # Detect violet, draw bounding box in dark violet (WORKING)
-    "magenta" : ([255, 0, 180], [255, 0, 150], "magenta") 
-}
-
-color_hsv_ranges = {
-    "red": {'hue': 0, 'saturation_range': (150, 255), 'value_range': (50, 255), 'hue_margin': 5, 'bbox_color': [0, 0, 200]},
-    "blue": {'hue': 120, 'saturation_range': (150, 255), 'value_range': (50, 255), 'hue_margin': 5, 'bbox_color': [255, 100, 0]},
-    "cyan": {'hue': 90, 'saturation_range': (150, 255), 'value_range': (50, 255), 'hue_margin': 5, 'bbox_color': [255, 220, 0]},
-    "green": {'hue': 60, 'saturation_range': (150, 255), 'value_range': (50, 255), 'hue_margin': 5, 'bbox_color': [0, 105, 0]},
-    "lime": {'hue': 75, 'saturation_range': (150, 255), 'value_range': (50, 255), 'hue_margin': 5, 'bbox_color': [0, 213, 0]},
-    "yellow": {'hue': 30, 'saturation_range': (150, 255), 'value_range': (50, 255), 'hue_margin': 5, 'bbox_color': [0, 200, 200]},
-    "orange": {'hue': 15, 'saturation_range': (150, 255), 'value_range': (50, 255), 'hue_margin': 5, 'bbox_color': [0, 69, 255]},
-    "violet": {'hue': 270, 'saturation_range': (150, 255), 'value_range': (50, 255), 'hue_margin': 5, 'bbox_color': [148, 0, 211]},
-    "magenta": {'hue': 300, 'saturation_range': (150, 255), 'value_range': (50, 255), 'hue_margin': 5, 'bbox_color': [255, 0, 150]}
-}
-
-
-
-# OpenCV interprets colors using BGR colorspace instead of RGB for some reason
+# Test program to identify singular pixel color using only hue value
 
 while True:
-    ret, frame = cap.read()
-    
-    hsvImage = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-    
-    
-    # find the limits of all colors
-    # create all the masks needed
-    for color_name, color_info in color_hsv_ranges.items():
-        lowerLimit, upperLimit = get_hsv_limits(color_info['hue'],
-                                                color_info['saturation_range'],
-                                                color_info['value_range'],
-                                                color_info['hue_margin'])
-        mask = cv2.inRange(hsvImage, lowerLimit, upperLimit)
-    
-        # Find contours in the mask
-        contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-        # Filter out small contours
-        min_area = 50  # Minimum area of contour to be considered, adjust as needed
-        found = False
-        for cnt in contours:
-            if cv2.contourArea(cnt) > min_area:
-                found = True
-                x, y, w, h = cv2.boundingRect(cnt)
-                bbox_color = color_info['bbox_color']  # Access the bbox_color for the current color
-                frame = cv2.rectangle(frame, (x, y), (x + w, y + h), bbox_color, 3)
-                
-        if found:
-            print(f"{color_name.capitalize()} has been found")
-    
-    
-    
-    
-    # filtered_contours = [cnt for cnt in contours if cv2.contourArea(cnt) > min_area]
-    # # Create a new mask with only the large contours
-    # filtered_mask = np.zeros_like(mask)
-    # cv2.drawContours(filtered_mask, filtered_contours, -1, (255), thickness=cv2.FILLED)
-    
-    # # Find the bounding box from the filtered mask
-    # x, y, w, h = cv2.boundingRect(filtered_mask)
-    # if w > 0 and h > 0:
-    #     frame = cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 5)
-    #     # print((x, y, x + w, y + h))
-    
-    # cv2.imshow('frame', filtered_mask)
-    
-    cv2.imshow('frame2', frame)
-    
-    if cv2.waitKey(1) & 0xFF == ord('q'):
-        break
-    
-cap.release()
+    _, frame = cap.read()
+    hsv_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+    height, width, _ = frame.shape
 
-cv2.destoryAllWindows()
+    cx = int(width / 2)
+    cy = int(height / 2)
+
+    # Pick pixel value
+    pixel_center = hsv_frame[cy, cx]            # Center of frame coordinate
+    hue_value = pixel_center[0] 
+    pixel_value = pixel_center[2]
+        
+    print("Hue: " + str(pixel_center[0]) + " Value: " + str(pixel_center[2]))
+    
+    color = "Undefined"
+    if hue_value < 5:
+        color = "RED"
+    elif hue_value < 22:
+        color = "ORANGE"
+    elif hue_value < 33:
+        color = "YELLOW"
+    elif hue_value < 75 and pixel_value > 175:
+        color = "LIME"
+    elif hue_value < 75 and pixel_value < 175:
+        color = "FOREST GREEN"
+    elif hue_value < 93:
+        color = "CYAN"
+    elif hue_value < 131:
+        color = "BLUE"
+    elif hue_value < 148:
+        color = "VIOLET"    
+    elif hue_value < 170:
+        color = "MAGENTA"
+    else:
+        color = "RED"
+        
+    pixel_center_bgr = frame[cy, cx]
+    b, g, r = int(pixel_center_bgr[0]), int(pixel_center_bgr[1]), int(pixel_center_bgr[2])
+
+    cv2.rectangle(frame, (cx - 220, 10), (cx + 200, 120), (255, 255, 255), -1)
+    cv2.putText(frame, color, (cx - 200, 100), 0, 3, (b, g, r), 5)
+    cv2.circle(frame, (cx, cy), 5, (25, 25, 25), 3)
+
+    cv2.imshow("Frame", frame)              # Frame display
+
+    if cv2.waitKey(1) & 0xFF == ord('q'):   # Wait for user interrupt to close window
+        break
+ 
+ 
+# Destory and release 
+  
+cap.release()
+cv2.destroyAllWindows()
