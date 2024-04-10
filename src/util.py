@@ -1,10 +1,15 @@
 import numpy as np
 import cv2
 
-def get_hsv_limits(hue, saturation_range=(100, 255), value_range=(100, 255), hue_margin=10):
-    lower_limit = np.array([hue - hue_margin, saturation_range[0], value_range[0]], dtype=np.uint8)
-    upper_limit = np.array([hue + hue_margin, saturation_range[1], value_range[1]], dtype=np.uint8)
-    return lower_limit, upper_limit
+def create_mask(hsv_frame, lower_color, upper_color):
+    mask = cv2.inRange(hsv_frame, lower_color, upper_color)
+    return mask
 
+def find_and_box_objects(frame, mask, color):
+    contours, _ = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    for contour in contours:
+        if cv2.contourArea(contour) > 500:  # Threshold to filter small contours
+            x, y, w, h = cv2.boundingRect(contour)
+            cv2.rectangle(frame, (x, y), (x + w, y + h), color, 2)
 
     
