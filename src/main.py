@@ -49,21 +49,21 @@ color_ranges = {
 
 # Change one of the magenta's, preferabbly lighter shade of magenta with a color lower on the hue scale more towards violet
 
+################################################ Executive Loop #######################################################
 
 while True:
     ret, frame = cap.read()
     hsv_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
     height, width, ret = frame.shape
     
-    ################################################ START OF NEW CODE ######################################################
+    cx = int(width / 2)
+    cy = int(height / 2)
+
+    pixel_center = hsv_frame[cy, cx]            # Absolute center of camera frame of reference
+    
+    ################################################ Start of HSV Algorithm ################################################
     
     # Define color ranges for detection
-    # Example for yellow (like a banana)
-    # yellow_lower = np.array([162, 100, 100])
-    # yellow_upper = np.array([178, 255, 255])
-    # yellow_mask = cv2.inRange(hsv_frame, yellow_lower, yellow_upper)
-    
-    # cv2.imshow('Mask', yellow_mask)
     
     for color_name, ranges in color_ranges.items():
         mask = None
@@ -104,53 +104,51 @@ while True:
             # Optionally, you can print or display the distance on the frame
             print("Distance from center:", distance)
             
-    ################################################ END OF NEW CODE ######################################################
+    ################################################ End of HSV Algorithm ##################################################
+    ######################################## Start of Robot Movement Calculation ###########################################
 
-    ################################################ START OF OLD CODE ######################################################
-
-    cx = int(width / 2)
-    cy = int(height / 2)
-
-    # Pick pixel value
-    pixel_center = hsv_frame[cy, cx]            # Center of frame coordinate
+    
+    # calculate the distance that the robot arm needs to move to reach the puzzle piece
+    # translate the pixel distance from the camera's center to the puzzle piece into real-world measurements
+    # scaling the pixel distance by a factor that translates it to the actual distance on the puzzle board.
+    # add offset of camera to robot arm as a vector to the scaled pixel distance to get the total distance to move
+    
+    # Variables defined TBD when real world measurements are made
+    scale_factor = 1            # scale factor to convert pixels to real-world units
+    offset_x = 1                # Horizontal offset of the robot arm from the camera in real-world units
+    offset_y = 1                # Vertical offset of the robot arm from the camera in real-world units
+    
+    # cx and cy represent absolute center of camera 
+    distance_x_in_pixels = frame_center_x - cx  # Center of camera x-coordinate in pixels
+    distance_y_in_pixels = frame_center_y - cy # Center of camera y-coordinate in pixels
+    
+    # Convert pixel distances to real-world units
+    distance_x_in_units = distance_x_in_pixels * scale_factor
+    distance_y_in_units = distance_y_in_pixels * scale_factor
+    
+    # Calculate the total distance the robot arm needs to move, including the offset
+    total_distance_x = distance_x_in_units + offset_x
+    total_distance_y = distance_y_in_units + offset_y
+    
+    ######################################## End of Robot Movement Calculation ###########################################
+    ####################################################### DEBUG ########################################################
+    
     hue_value = pixel_center[0] 
     pixel_value = pixel_center[2]
-        
+    
+    # uncomment for verbose terminal for HSV troubleshooting
     # print("Hue: " + str(pixel_center[0]) + " Saturation: " + str(pixel_center[1]) +  " Value: " + str(pixel_center[2]))
     
-    # color = "Undefined"
-    # if hue_value < 5:
-    #     color = "RED"
-    # elif hue_value < 22:
-    #     color = "ORANGE"
-    # elif hue_value < 33:
-    #     color = "YELLOW"
-    # elif hue_value < 75 and pixel_value > 175:
-    #     color = "LIME"
-    # elif hue_value < 75 and pixel_value < 175:
-    #     color = "GREEN"
-    # elif hue_value < 93:
-    #     color = "CYAN"
-    # elif hue_value < 131:
-    #     color = "BLUE"
-    # elif hue_value < 148:
-    #     color = "VIOLET"    
-    # elif hue_value < 170:
-    #     color = "MAGENTA"
-    # else:
-    #     color = "RED"
-        
-    # pixel_center_bgr = frame[cy, cx]
-    # b, g, r = int(pixel_center_bgr[0]), int(pixel_center_bgr[1]), int(pixel_center_bgr[2])
-    # cv2.rectangle(frame, (cx - 220, 10), (cx + 200, 120), (255, 255, 255), -1)
-    # cv2.putText(frame, color, (cx - 200, 100), 0, 3, (b, g, r), 5)
+    #################################################### END OF DEBUG ####################################################
+
     cv2.circle(frame, (cx, cy), 5, (25, 25, 25), 3)
 
     cv2.imshow("Frame", frame)              # Frame display
 
     if cv2.waitKey(1) & 0xFF == ord('q'):   # Wait for user interrupt to close window
         break
- 
+    
+################################################# End of Executive Loop ##################################################
  
 # Destory and release  
 cap.release()
