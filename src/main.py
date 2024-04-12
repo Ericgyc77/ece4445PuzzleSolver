@@ -5,7 +5,7 @@ import time
 from util import create_mask
 from util import find_and_box_objects
 
-cap = cv2.VideoCapture(1) # Webcam, needs to be changed from PC to laptop
+cap = cv2.VideoCapture(0) # Webcam, needs to be changed from PC to laptop
 # cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
 # cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
 
@@ -104,33 +104,33 @@ while True:
             # Optionally, you can print or display the distance on the frame
             print("Distance from center:", distance)
             
-    ################################################ End of HSV Algorithm ##################################################
-    ######################################## Start of Robot Movement Calculation ###########################################
+            ################################################ End of HSV Algorithm ##################################################
+            ######################################## Start of Robot Movement Calculation ###########################################
 
-    
-    # calculate the distance that the robot arm needs to move to reach the puzzle piece
-    # translate the pixel distance from the camera's center to the puzzle piece into real-world measurements
-    # scaling the pixel distance by a factor that translates it to the actual distance on the puzzle board.
-    # add offset of camera to robot arm as a vector to the scaled pixel distance to get the total distance to move
-    
-    # Variables defined TBD when real world measurements are made
-    scale_factor = 1            # scale factor to convert pixels to real-world units
-    offset_x = 1                # Horizontal offset of the robot arm from the camera in real-world units
-    offset_y = 1                # Vertical offset of the robot arm from the camera in real-world units
-    
-    # cx and cy represent absolute center of camera 
-    distance_x_in_pixels = frame_center_x - cx  # Center of camera x-coordinate in pixels
-    distance_y_in_pixels = frame_center_y - cy # Center of camera y-coordinate in pixels
-    
-    # Convert pixel distances to real-world units
-    distance_x_in_units = distance_x_in_pixels * scale_factor
-    distance_y_in_units = distance_y_in_pixels * scale_factor
-    
-    # Calculate the total distance the robot arm needs to move, including the offset
-    total_distance_x = distance_x_in_units + offset_x
-    total_distance_y = distance_y_in_units + offset_y
-    
-    ######################################## End of Robot Movement Calculation ###########################################
+            
+            # calculate the distance that the robot arm needs to move to reach the puzzle piece
+            # translate the pixel distance from the camera's center to the puzzle piece into real-world measurements
+            # scaling the pixel distance by a factor that translates it to the actual distance on the puzzle board.
+            # add offset of camera to robot arm as a vector to the scaled pixel distance to get the total distance to move
+            
+            # Variables defined TBD when real world measurements are made
+            scale_factor = 1            # scale factor to convert pixels to real-world units
+            offset_x = 1                # Horizontal offset of the robot arm from the camera in real-world units
+            offset_y = 1                # Vertical offset of the robot arm from the camera in real-world units
+            
+            # cx and cy represent absolute center of camera 
+            distance_x_in_pixels = frame_center_x - cx  # Center of camera x-coordinate in pixels
+            distance_y_in_pixels = frame_center_y - cy # Center of camera y-coordinate in pixels
+            
+            # Convert pixel distances to real-world units
+            distance_x_in_units = distance_x_in_pixels * scale_factor
+            distance_y_in_units = distance_y_in_pixels * scale_factor
+            
+            # Calculate the total distance the robot arm needs to move, including the offset
+            total_distance_x = distance_x_in_units + offset_x
+            total_distance_y = distance_y_in_units + offset_y
+            
+            ######################################## End of Robot Movement Calculation ###########################################
     ####################################################### DEBUG ########################################################
     
     hue_value = pixel_center[0] 
