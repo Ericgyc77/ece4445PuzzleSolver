@@ -103,7 +103,7 @@ while True:
             distance = ((center_x - frame_center_x) ** 2 + (center_y - frame_center_y) ** 2) ** 0.5
             
             # Optionally, you can print or display the distance on the frame
-            # print("Distance from center:", distance)
+            print("Distance from center:", distance)
             
             ################################################ End of HSV Algorithm ##################################################
             ######################################## Start of Robot Movement Calculation ###########################################
@@ -114,10 +114,24 @@ while True:
             # scaling the pixel distance by a factor that translates it to the actual distance on the puzzle board.
             # add offset of camera to robot arm as a vector to the scaled pixel distance to get the total distance to move
             
+            # Using cm as our real world units, assume everything is in cm unless stated otherwise
+            
+            # x move right 8cm
+            # y move up 5 cm
+            
+            # Beginning of scale factor
+            # Current Calibration -> 185.647 pixel distance translates to 4cm
+            # Scale factor = 46.41175 pixels/cm
+            
+            # Need to determine heading: 
+            # Right side of screen will be postive X, left will be negative
+            # FOrward positive, backward negative
+            
+            
             # Variables defined TBD when real world measurements are made
-            scale_factor = 1            # scale factor to convert pixels to real-world units
-            offset_x = 1                # Horizontal offset of the robot arm from the camera in real-world units
-            offset_y = 1                # Vertical offset of the robot arm from the camera in real-world units
+            scale_factor = 0.02154627       # scale factor to convert pixels to cm
+            offset_x = 8                    # Horizontal offset of the robot arm (cm)
+            offset_y = 5                    # Vertical offset of the robot arm (cm)
             
             # cx and cy represent absolute center of camera 
             distance_x_in_pixels = frame_center_x - cx  # Center of camera x-coordinate in pixels
@@ -138,7 +152,7 @@ while True:
     pixel_value = pixel_center[2]
     
     # uncomment for verbose terminal for HSV troubleshooting
-    print("Hue: " + str(pixel_center[0]) + " Saturation: " + str(pixel_center[1]) +  " Value: " + str(pixel_center[2]))
+    # print("Hue: " + str(pixel_center[0]) + " Saturation: " + str(pixel_center[1]) +  " Value: " + str(pixel_center[2]))
     
     #################################################### END OF DEBUG ####################################################
 
