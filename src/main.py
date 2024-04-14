@@ -5,7 +5,7 @@ import time
 from util import create_mask
 from util import find_and_box_objects
 
-cap = cv2.VideoCapture(0) # Webcam, needs to be changed from PC to laptop
+cap = cv2.VideoCapture(1) # Webcam, needs to be changed from PC to laptop
 # cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
 # cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
 
@@ -37,14 +37,15 @@ while True:
 
 # Define hue and value ranges for detection, ignoring saturation
 color_ranges = {
-    'red': [([0, 100, 100], [5, 255, 255], (0, 0, 255))],
-    'orange': [([6, 100, 100], [21, 255, 255], (0, 165, 255))],
-    'yellow': [([22, 100, 100], [33, 255, 255], (0, 255, 255))],
-    'green': [([34, 100, 40], [74, 255, 174], (0, 128, 0))],
+    'red': [([0, 100, 100], [8, 255, 255], (0, 0, 255))],
+    'orange': [([9, 100, 100], [19, 255, 255], (0, 165, 255))],
+    'yellow': [([20, 100, 100], [33, 255, 255], (0, 255, 255))],
+    'lime_green': [([34, 100, 40], [58, 255, 225], (0, 255, 0))],
+    'dark_green': [([59, 100, 100], [74, 255, 225], (0, 128, 0))],
     'cyan': [([75, 100, 100], [101, 255, 255], (255, 255, 0))],   # STRONGGG
     'blue': [([102, 100, 100], [120, 255, 255], (255, 0, 0))],
-    'violet': [([150, 100, 100], [169, 255, 255], (255, 0, 255))], # more like light magenta
-    'magenta': [([170, 100, 100], [178, 255, 255], (255, 0, 255))], # florescent magenta
+    'violet': [([137, 60, 100], [169, 255, 255], (255, 0, 255))], # more like light magenta
+    'magenta': [([170, 70, 100], [178, 255, 255], (255, 0, 255))], # florescent magenta
 }
 
 # Change one of the magenta's, preferabbly lighter shade of magenta with a color lower on the hue scale more towards violet
@@ -102,7 +103,7 @@ while True:
             distance = ((center_x - frame_center_x) ** 2 + (center_y - frame_center_y) ** 2) ** 0.5
             
             # Optionally, you can print or display the distance on the frame
-            print("Distance from center:", distance)
+            # print("Distance from center:", distance)
             
             ################################################ End of HSV Algorithm ##################################################
             ######################################## Start of Robot Movement Calculation ###########################################
@@ -137,7 +138,7 @@ while True:
     pixel_value = pixel_center[2]
     
     # uncomment for verbose terminal for HSV troubleshooting
-    # print("Hue: " + str(pixel_center[0]) + " Saturation: " + str(pixel_center[1]) +  " Value: " + str(pixel_center[2]))
+    print("Hue: " + str(pixel_center[0]) + " Saturation: " + str(pixel_center[1]) +  " Value: " + str(pixel_center[2]))
     
     #################################################### END OF DEBUG ####################################################
 
