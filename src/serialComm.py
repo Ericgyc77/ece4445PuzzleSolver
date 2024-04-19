@@ -2,8 +2,7 @@ import serial
 import time
 
 # Set up the serial connection (the port name will vary, so check it)
-ser = serial.Serial('/dev/ttyACM0', 9600) # Can also be COM5 since windows
-# ser = serial.Serial('/dev/ttyACM0', 115200)
+ser = serial.Serial('/dev/ttyACM0', 9600)
 
 # Ensure the connection is established
 time.sleep(2)
