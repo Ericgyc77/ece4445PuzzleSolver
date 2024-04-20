@@ -1,6 +1,7 @@
 import serial
 import time
 
+# Default port specified for Raspberry Pi 4, port should be filled on Windows or Linux
 def init_serial(port='/dev/ttyACM0', baud_rate=9600):
     ser = serial.Serial(port, baud_rate)
     time.sleep(2)  # Ensure the connection is established

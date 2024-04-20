@@ -7,21 +7,20 @@ void setup() {
 void loop() {
   // Check if data is available to read.
   if (Serial.available() > 0) {
-    // Read the incoming string until a newline is received.
+    while(Serial.available() > 0) {
+      Serial.read();
+    }
+    // Read and wait for new data to arrive
+    delay(10);
     String receivedColor = Serial.readStringUntil('\n');
     
     // Print the received color to the Serial Monitor.
     Serial.print("Color detected: ");
     Serial.println(receivedColor);
-
-    // Send a confirmation message back to the Raspberry Pi.
-    Serial.print("Received: ");
-    Serial.println(receivedColor);
   }
   else {
     Serial.println("No data recieved.");
   }
-  delay(2000);
 }
 
 /////////////////////////////////////////////////// DEBUG/PROOF OF CONCEPT CODE ////////////////////////////////////////////////

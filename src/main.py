@@ -9,9 +9,9 @@ from util import find_and_box_objects
 # Initialize serial communication
 # Use /dev/ttyACM0 for Raspberry Pi 4
 # Use COM3 for Eric's Laptop
-# ser = serialComm.init_serial('COM3', 9600)
+ser = serialComm.init_serial('/dev/ttyACM0', 9600)
 
-cap = cv2.VideoCapture(1) # Webcam, needs to be changed from PC to laptop
+cap = cv2.VideoCapture(-1) # Webcam, needs to be changed from PC to laptop
 # cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
 # cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
 
@@ -48,15 +48,17 @@ color_ranges = {
     'yellow': [([20, 100, 100], [33, 255, 255], (0, 255, 255))],
     'lime_green': [([34, 100, 40], [58, 255, 225], (0, 255, 0))],
     'dark_green': [([59, 100, 100], [74, 255, 225], (0, 128, 0))],
-    'cyan': [([75, 100, 100], [101, 255, 255], (255, 255, 0))],   # STRONGGG
+    'cyan': [([75, 100, 100], [101, 255, 255], (255, 255, 0))],         # STRONGGG
     'blue': [([102, 100, 100], [120, 255, 255], (255, 0, 0))],
-    'violet': [([137, 60, 100], [169, 255, 255], (255, 0, 255))], # more like light magenta
-    'magenta': [([170, 70, 100], [178, 255, 255], (255, 0, 255))], # florescent magenta
+    'violet': [([137, 60, 100], [169, 255, 255], (255, 0, 255))],       # deep violet
+    'magenta': [([170, 70, 100], [178, 255, 255], (255, 0, 255))],      # florescent magenta
 }
 
-# Change one of the magenta's, preferabbly lighter shade of magenta with a color lower on the hue scale more towards violet
-
 ################################################ Executive Loop #######################################################
+
+last_sent = time.time()
+last_noColor = time.time()
+send_interval = 0.5                               # send every 2 seconds
 
 while True:
     ret, frame = cap.read()
@@ -71,6 +73,8 @@ while True:
     ################################################ Start of HSV Algorithm ################################################
     
     # Define color ranges for detection
+
+    colorDetected = False
     
     for color_name, ranges in color_ranges.items():
         mask = None
@@ -95,17 +99,24 @@ while True:
                     largest_rect = (x, y, w, h)
                 cv2.rectangle(frame, (x, y), (x + w, y + h), bbox_color, 2)  # Draw rectangle in bbox_color
                 colorDetected = True
+                # print("Color detected: " + str(color_name))
                 
-        #         # Send and receive messages via serial
-        #         serialComm.send_message(ser, color_name)
-        #         response = serialComm.receive_message(ser)
-                
-        #         # Check for and print response from Arduino
-        #         if response:
-        #             print("Response from Arduino" + str(response))
+                # Check that send interval has elapsed before new color detection message is sent
+                if colorDetected and (float(time.time() - last_sent) > float(send_interval)):
+                    # Send and receive messages via serial
+                    serialComm.send_message(ser, str(color_name))
+                    response = serialComm.receive_message(ser)
                     
-        # if not colorDetected:
-        #     print("No color detected in this frame.")
+                    # Check for and print response from Arduino
+                    if response:
+                        print("Response from Arduino: " + str(response))
+                    # print("Color detected: " + str(color_name))
+
+                    last_sent = time.time()
+                    
+        # if not colorDetected and (time.time() - last_noColor > send_interval):
+        #     # print("No color detected in this frame.")
+        #     last_noColor = time.time()
                 
                 
         if largest_rect is not None:
@@ -187,4 +198,4 @@ while True:
 # Destory and release  
 cap.release()
 cv2.destroyAllWindows()
-# serialComm.close_serial(ser)
+serialComm.close_serial(ser)
