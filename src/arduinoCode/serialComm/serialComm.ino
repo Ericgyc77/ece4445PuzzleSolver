@@ -7,16 +7,43 @@ void setup() {
 void loop() {
   // Check if data is available to read.
   if (Serial.available() > 0) {
-    String data = Serial.readString(); // Read the incoming data as string
+    // Read the incoming string until a newline is received.
+    String receivedColor = Serial.readStringUntil('\n');
+    
+    // Print the received color to the Serial Monitor.
+    Serial.print("Color detected: ");
+    Serial.println(receivedColor);
 
-    // Echo the received data back to the serial.
-    Serial.println("Arduino Received: " + data);
+    // Send a confirmation message back to the Raspberry Pi.
+    Serial.print("Received: ");
+    Serial.println(receivedColor);
   }
   else {
-    Serial.println("No incoming data detected.");
+    Serial.println("No data recieved.");
   }
-
-  // Send a simple message every 2 seconds.
-  Serial.println("Arduino Sent: Hello from Arduino!");
   delay(2000);
 }
+
+/////////////////////////////////////////////////// DEBUG/PROOF OF CONCEPT CODE ////////////////////////////////////////////////
+
+// void loop() {
+//   // Check if data is available to read.
+//   if (Serial.available() > 0) {
+//     String data = Serial.readString(); // Read the incoming data as string
+
+//     // Echo the received data back to the serial.
+//     Serial.println("Arduino Received: " + data);
+//   }
+//   else {
+//     Serial.println("No incoming data detected.");
+//   }
+
+//   // Send a simple message every 2 seconds.
+//   Serial.println("Arduino Sent: Hello from Arduino!");
+//   delay(2000);
+// }
+
+/////////////////////////////////////////////////// DEBUG/PROOF OF CONCEPT CODE ////////////////////////////////////////////////
+
+
+

@@ -1,9 +1,15 @@
 import cv2
 import numpy as np
 import time
+import serialComm  # Import the serial communication functions
 
 from util import create_mask
 from util import find_and_box_objects
+
+# Initialize serial communication
+# Use /dev/ttyACM0 for Raspberry Pi 4
+# Use COM3 for Eric's Laptop
+# ser = serialComm.init_serial('COM3', 9600)
 
 cap = cv2.VideoCapture(1) # Webcam, needs to be changed from PC to laptop
 # cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
@@ -87,7 +93,20 @@ while True:
                 if area > largest_area:
                     largest_area = area
                     largest_rect = (x, y, w, h)
-                cv2.rectangle(frame, (x, y), (x + w, y + h), bbox_color, 2)  # Draw rectangle in yellow
+                cv2.rectangle(frame, (x, y), (x + w, y + h), bbox_color, 2)  # Draw rectangle in bbox_color
+                colorDetected = True
+                
+        #         # Send and receive messages via serial
+        #         serialComm.send_message(ser, color_name)
+        #         response = serialComm.receive_message(ser)
+                
+        #         # Check for and print response from Arduino
+        #         if response:
+        #             print("Response from Arduino" + str(response))
+                    
+        # if not colorDetected:
+        #     print("No color detected in this frame.")
+                
                 
         if largest_rect is not None:
             x, y, w, h = largest_rect
@@ -103,7 +122,7 @@ while True:
             distance = ((center_x - frame_center_x) ** 2 + (center_y - frame_center_y) ** 2) ** 0.5
             
             # Optionally, you can print or display the distance on the frame
-            print("Distance from center:", distance)
+            # print("Distance from center:", distance)
             
             ################################################ End of HSV Algorithm ##################################################
             ######################################## Start of Robot Movement Calculation ###########################################
@@ -168,3 +187,4 @@ while True:
 # Destory and release  
 cap.release()
 cv2.destroyAllWindows()
+# serialComm.close_serial(ser)
