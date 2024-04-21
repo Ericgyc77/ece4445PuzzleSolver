@@ -21,18 +21,18 @@ AccelStepper stepperY = AccelStepper(motorInterfaceType, stepPiny, dirPiny);
 AccelStepper stepperX1 = AccelStepper(motorInterfaceType, stepPinx1, dirPinx1);
 AccelStepper stepperX2 = AccelStepper(motorInterfaceType, stepPinx2, dirPinx2);
 
-ezButton limitSwitchY(8);  // create ezButton object that attach to pin 8;
-ezButton limitSwitchX1(11);  // create ezButton object that attach to pin 11;
-ezButton limitSwitchX2(9);  // create ezButton object that attach to pin 9;
+ezButton limitSwitchY(8);  // create ezButton object that attach to pin 8, for the y stepper
+ezButton limitSwitchX1(11);  // create ezButton object that attach to pin 11 this is for the left x stepper
+ezButton limitSwitchX2(9);  // create ezButton object that attach to pin 9 this is for the right x stepper
 
 bool startUpY;
 bool startUpX1;
 bool startUpX2;
 
-int xStart[5] = {100, 100, 100, 100, 100};
-int yStart[5] = {-100, -350, -625, -875, -1150};
-int xDest[5] = {500, 500, 500, 500, 500};
-int yDest[5] = {-100, -350, -625, -875, -1150};
+int xStart[9] = {100, 100, 100, 100, 100, 300, 300, 300, 300};
+int yStart[9] = {-100, -350, -625, -875, -1150, -100, -350, -625, -875};
+int xDest[9] = {1150, 900, 630, 1150, 900, 630, 1150, 900, 630};
+int yDest[9] = {-100, -100, -100, -325, -325, -325, -550, -550, -550};
 
 // the setup function runs once when you press reset or power the board
 void setup() {
@@ -44,9 +44,9 @@ void setup() {
   stepperY.setMaxSpeed(2000);
   stepperX1.setMaxSpeed(2000);
   stepperX2.setMaxSpeed(2000);
-  stepperY.setAcceleration(25);
-  stepperX1.setAcceleration(25);
-  stepperX2.setAcceleration(25);
+  stepperY.setAcceleration(49);
+  stepperX1.setAcceleration(49);
+  stepperX2.setAcceleration(49);
   limitSwitchY.setDebounceTime(50); // set debounce time to 50 milliseconds
   limitSwitchX1.setDebounceTime(50); // set debounce time to 50 milliseconds
   limitSwitchX2.setDebounceTime(50); // set debounce time to 50 milliseconds
@@ -136,7 +136,7 @@ void loop() {
   // stepperY.stop();
 
   // This is the start of the code that should allow us to get multiple peices
-  for(int i = 0; i < 5; i++)
+  for(int i = 0; i < 9; i++)
   {
     // int xStart[1] = {100}
     // int yStart[1] = {-100}
@@ -170,12 +170,12 @@ void loop() {
     digitalWrite(IN2_PIN, LOW);   // actuator will stop extending automatically when reaching the limit
     delay(2000);                  // delay to let the actuator go all the way down before suction
     digitalWrite(SOL_PIN, HIGH);  // Start suction
-    delay(5000);                  // Wait for 5 seconds before going up to secure peice
+    delay(4000);                  // Wait for 4 seconds before going up to secure peice
 
     // retracts the actuator
     digitalWrite(IN1_PIN, LOW);
     digitalWrite(IN2_PIN, HIGH);  // actuator will stop extending automatically when reaching the limit
-    delay(6000);                  // Let actuator go all the way up and pause
+    delay(5000);                  // Let actuator go all the way up and pause
 
 
     // Move with the piece in y direction to the destination
@@ -184,11 +184,11 @@ void loop() {
     delay(1000);
     stepperY.stop();
 
-    delay(2000);                  // Delay for debug purposes
+    delay(1000);                  // Delay for debug purposes
 
     // Move with the piece in x direction to the destination 
-    stepperX1.moveTo(-1*xDest[1]);
-    stepperX2.moveTo(xDest[1]); 
+    stepperX1.moveTo(-1*xDest[i]);
+    stepperX2.moveTo(xDest[i]); 
     while(stepperX1.distanceToGo() != 0 || stepperX2.distanceToGo() != 0)
     {
       if(stepperX1.distanceToGo() != 0)
@@ -201,20 +201,20 @@ void loop() {
       }
     }
 
-    delay(2000);                  // Delay for debug purposes
+    delay(1000);                  // Delay for debug purposes
 
     // extend the actuator
     digitalWrite(IN1_PIN, HIGH);
     digitalWrite(IN2_PIN, LOW);
     delay(2000); // actuator will stop extending automatically when reaching the limit
 
-    delay(5000); // Hold the peice for 5 seconds 
+    delay(4000); // Hold the peice for 4 seconds 
     digitalWrite(SOL_PIN, LOW);  // Stop suction, drop piece
 
     // retracts the actuator
     digitalWrite(IN1_PIN, LOW);
     digitalWrite(IN2_PIN, HIGH);
-    delay(6000); // actuator will stop extending automatically when reaching the limit
+    delay(5000); // actuator will stop extending automatically when reaching the limit
   }
 
 
