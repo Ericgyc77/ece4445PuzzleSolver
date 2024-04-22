@@ -76,6 +76,14 @@ while True:
 
     colorDetected = False
     
+    # Send and receive messages via serial
+    serialComm.send_message(ser, str(color_name))
+    response = serialComm.receive_message(ser)
+    
+    # Check for and print response from Arduino
+    if response:
+        print("Response from Arduino: " + str(response))
+    
     for color_name, ranges in color_ranges.items():
         mask = None
         for lower, upper, bbox_color in ranges:

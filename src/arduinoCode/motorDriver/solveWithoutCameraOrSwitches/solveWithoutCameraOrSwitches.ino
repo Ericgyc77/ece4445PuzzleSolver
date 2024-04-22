@@ -45,9 +45,9 @@ bool startUpX2;
 
 int xStart[9] = {100, 100, 100, 100, 100, 300, 300, 300, 300};
 int yStart[9] = {-100, -350, -625, -875, -1150, -100, -350, -625, -875};
-int xDest[9] = {1150, 900, 630, 1150, 900, 630, 1150, 900, 630};
-int yDest[9] = {-100, -100, -100, -325, -325, -325, -550, -550, -550};
-int destinationIndicie = -1;
+int xDest[10] = {1150, 900, 630, 1150, 900, 630, 1150, 900, 630, 1150};
+int yDest[10] = {-100, -100, -100, -325, -325, -325, -550, -550, -550, -630};
+int destinationIndicie = 9;
 
 // Predefined colors
 String predefinedColors[9] = {"red", "yellow", "orange", "magenta",
@@ -228,64 +228,61 @@ void loop() {
     // Sanity Check + Grab destination indicie based on color
     if(pollColor() != -1) {
        destinationIndicie = pollColor();
-    } else destinationIndicie = -1;
+    } else destinationIndicie = 9;             // go to "unknown" or "no color" destination area
 
-
-    if(destinationIndicie != -1) {
-
-      Serial.print("Current destination indicie: ");
-      Serial.println(destinationIndicie);
-      // extend the actuator
-      digitalWrite(IN1_PIN, HIGH);
-      digitalWrite(IN2_PIN, LOW);   // actuator will stop extending automatically when reaching the limit
-      delay(2000);                  // delay to let the actuator go all the way down before suction
-      digitalWrite(SOL_PIN, HIGH);  // Start suction
-      delay(4000);                  // Wait for 4 seconds before going up to secure peice
-
-      // retracts the actuator
-      digitalWrite(IN1_PIN, LOW);
-      digitalWrite(IN2_PIN, HIGH);  // actuator will stop extending automatically when reaching the limit
-      delay(5000);                  // Let actuator go all the way up and pause
-
-      // Move with the piece in y direction to the destination
-      stepperY.moveTo(yDest[destinationIndicie]);              
-      stepperY.runToPosition();
-      delay(1000);
-      stepperY.stop();
-
-      delay(1000);                  // Delay for debug purposes
-
-      // Move with the piece in x direction to the destination 
-      stepperX1.moveTo(-1*xDest[destinationIndicie]);
-      stepperX2.moveTo(xDest[destinationIndicie]); 
-      while(stepperX1.distanceToGo() != 0 || stepperX2.distanceToGo() != 0)
-      {
-        if(stepperX1.distanceToGo() != 0)
-        {
-          stepperX1.run();
-        }
-        if(stepperX2.distanceToGo() != 0)
-        {
-          stepperX2.run();
-        }
-      }
-
-      delay(1000);                  // Delay for debug purposes
-
-      // extend the actuator
-      digitalWrite(IN1_PIN, HIGH);
-      digitalWrite(IN2_PIN, LOW);
-      delay(2000); // actuator will stop extending automatically when reaching the limit
-
-      delay(4000); // Hold the peice for 4 seconds 
-      digitalWrite(SOL_PIN, LOW);  // Stop suction, drop piece
-
-      // retracts the actuator
-      digitalWrite(IN1_PIN, LOW);
-      digitalWrite(IN2_PIN, HIGH);
-      delay(5000); // actuator will stop extending automatically when reaching the limit
-    }
+    Serial.print("Current destination indicie: ");
+    Serial.println(destinationIndicie);
     
+    // extend the actuator
+    digitalWrite(IN1_PIN, HIGH);
+    digitalWrite(IN2_PIN, LOW);   // actuator will stop extending automatically when reaching the limit
+    delay(2000);                  // delay to let the actuator go all the way down before suction
+    digitalWrite(SOL_PIN, HIGH);  // Start suction
+    delay(4000);                  // Wait for 4 seconds before going up to secure peice
+
+    // retracts the actuator
+    digitalWrite(IN1_PIN, LOW);
+    digitalWrite(IN2_PIN, HIGH);  // actuator will stop extending automatically when reaching the limit
+    delay(5000);                  // Let actuator go all the way up and pause
+
+    // Move with the piece in y direction to the destination
+    stepperY.moveTo(yDest[destinationIndicie]);              
+    stepperY.runToPosition();
+    delay(1000);
+    stepperY.stop();
+
+    delay(1000);                  // Delay for debug purposes
+
+    // Move with the piece in x direction to the destination 
+    stepperX1.moveTo(-1*xDest[destinationIndicie]);
+    stepperX2.moveTo(xDest[destinationIndicie]); 
+    while(stepperX1.distanceToGo() != 0 || stepperX2.distanceToGo() != 0)
+    {
+      if(stepperX1.distanceToGo() != 0)
+      {
+        stepperX1.run();
+      }
+      if(stepperX2.distanceToGo() != 0)
+      {
+        stepperX2.run();
+      }
+    }
+
+    delay(1000);                  // Delay for debug purposes
+
+    // extend the actuator
+    digitalWrite(IN1_PIN, HIGH);
+    digitalWrite(IN2_PIN, LOW);
+    delay(2000); // actuator will stop extending automatically when reaching the limit
+
+    delay(4000); // Hold the peice for 4 seconds 
+    digitalWrite(SOL_PIN, LOW);  // Stop suction, drop piece
+
+    // retracts the actuator
+    digitalWrite(IN1_PIN, LOW);
+    digitalWrite(IN2_PIN, HIGH);
+    delay(5000); // actuator will stop extending automatically when reaching the limit
+
   }
 
 
