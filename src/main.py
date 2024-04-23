@@ -58,7 +58,7 @@ color_ranges = {
 
 last_sent = time.time()
 last_noColor = time.time()
-send_interval = 0.5                               # send every 2 seconds
+send_interval = 1                               # send every 1 seconds
 
 while True:
     ret, frame = cap.read()
@@ -75,14 +75,6 @@ while True:
     # Define color ranges for detection
 
     colorDetected = False
-    
-    # Send and receive messages via serial
-    serialComm.send_message(ser, str(color_name))
-    response = serialComm.receive_message(ser)
-    
-    # Check for and print response from Arduino
-    if response:
-        print("Response from Arduino: " + str(response))
     
     for color_name, ranges in color_ranges.items():
         mask = None
@@ -121,6 +113,10 @@ while True:
                     # print("Color detected: " + str(color_name))
 
                     last_sent = time.time()
+
+        nonColorResponse = serialComm.receive_message(ser)
+        if nonColorResponse:
+            print("Notice: " + nonColorResponse)
                     
         # if not colorDetected and (time.time() - last_noColor > send_interval):
         #     # print("No color detected in this frame.")

@@ -43,10 +43,10 @@ bool startUpX2;
   9 -> Magenta
 */
 
-int xStart[9] = {100, 100, 100, 100, 100, 300, 300, 300, 300};
+int xStart[9] = {100, 100, 100, 100, 100, 400, 400, 400, 400};
 int yStart[9] = {-100, -350, -625, -875, -1150, -100, -350, -625, -875};
-int xDest[10] = {1150, 900, 630, 1150, 900, 630, 1150, 900, 630, 1150};
-int yDest[10] = {-100, -100, -100, -325, -325, -325, -550, -550, -550, -630};
+int xDest[10] = {1100, 875, 650, 1100, 875, 600, 1100, 875, 650, 1150};
+int yDest[10] = {-100, -100, -100, -325, -325, -325, -550, -550, -550, -800};
 int destinationIndicie = 9;
 
 // Predefined colors
@@ -96,10 +96,10 @@ void setup() {
 int pollColor() {
   // Check if data is available to read.
   if (Serial.available() > 0) {
-    // Read and wait for new data to arrive
-    delay(10);
     String receivedColor = Serial.readStringUntil('\n');
     // Loop through the predefined colors array
+    Serial.print("Recieved color stored as: ");
+    Serial.println(recievedColor);
     for (int i = 0; i < 9; i++) {
       if (receivedColor == predefinedColors[i]) {
         // Print the received color to the Serial Monitor.
@@ -108,11 +108,12 @@ int pollColor() {
         return i; // Match found, return correct indicie
       }
     }
+    else {
+      Serial.print("Outside of color range, no color detected.")
+      return 9;   // return outside of range coordinate indicie
+    }
   }
-  else {
-    Serial.println("No data received.");
-    return -1;
-  }
+  delay(1000);
 }
 
 // the loop function runs over and over again forever
@@ -225,10 +226,12 @@ void loop() {
       }
     }
 
+    delay(1000);      // Wait for color to settle
+
     // Sanity Check + Grab destination indicie based on color
-    if(pollColor() != -1) {
-       destinationIndicie = pollColor();
-    } else destinationIndicie = 9;             // go to "unknown" or "no color" destination area
+    destinateIndicie = pollColor()
+
+    delay(1000);      // Account for any transmission delays
 
     Serial.print("Current destination indicie: ");
     Serial.println(destinationIndicie);
