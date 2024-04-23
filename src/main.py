@@ -79,7 +79,7 @@ while True:
         # Find contours and draw bounding box for yellow objects
         contours, _ = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
         for contour in contours:
-            if cv2.contourArea(contour) > 300:  # Filter out small areas
+            if cv2.contourArea(contour) > 4000:  # Filter out small areas
                 x, y, w, h = cv2.boundingRect(contour)
                 area = w * h
                 if area > largest_area:
