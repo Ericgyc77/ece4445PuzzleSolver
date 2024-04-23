@@ -34,12 +34,12 @@ color_ranges = {
     'red': [([0, 100, 100], [8, 255, 255], (0, 0, 255))],
     'orange': [([9, 100, 100], [19, 255, 255], (0, 165, 255))],
     'yellow': [([20, 100, 100], [33, 255, 255], (0, 255, 255))],
-    'lime_green': [([34, 100, 40], [58, 255, 225], (0, 255, 0))],
-    'dark_green': [([59, 100, 100], [74, 255, 225], (0, 128, 0))],
-    'cyan': [([75, 100, 100], [101, 255, 255], (255, 255, 0))],         # STRONGGG
-    'blue': [([102, 100, 100], [120, 255, 255], (255, 0, 0))],
-    'violet': [([137, 60, 100], [169, 255, 255], (255, 0, 255))],       # deep violet
-    'magenta': [([170, 70, 100], [178, 255, 255], (255, 0, 255))],      # florescent magenta
+    'lime_green': [([34, 100, 40], [61, 255, 225], (0, 255, 0))],
+    'dark_green': [([62, 100, 100], [81, 255, 225], (0, 128, 0))],
+    'cyan': [([82, 100, 100], [105, 255, 255], (255, 255, 0))],         # STRONGGG
+    'blue': [([106, 100, 100], [120, 255, 255], (255, 0, 0))],
+    'violet': [([129, 60, 100], [160, 255, 255], (255, 0, 127))],       # deep violet
+    'magenta': [([161, 70, 100], [178, 255, 255], (255, 0, 255))],      # florescent magenta
 }
 
 ################################################ Executive Loop #######################################################
@@ -115,27 +115,6 @@ while True:
                 # Check for and print response from Arduino
                 if response:
                     print("Response from Arduino: " + str(response))
-
-
-                           
-                
-        # if largest_rect is not None:
-        #     x, y, w, h = largest_rect
-        #     center_x = x + w // 2               # find center of largest rectangle, flooring division 
-        #     center_y = y + h // 2
-        
-        #     # Draw a dot at the center of the largest bounding box
-        #     cv2.circle(frame, (center_x, center_y), 5, (0, 0, 255), -1)
-
-        #     # Calculate the distance from the absolute center of the frame
-        #     frame_center_x = width // 2
-        #     frame_center_y = height // 2
-        #     distance = ((center_x - frame_center_x) ** 2 + (center_y - frame_center_y) ** 2) ** 0.5
-            
-            # Optionally, you can print or display the distance on the frame
-            # print("Distance from center:", distance)
-
-        
             
     ################################################ End of HSV Algorithm ##################################################
 

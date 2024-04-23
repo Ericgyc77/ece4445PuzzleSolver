@@ -44,7 +44,7 @@ bool startUpX2;
 
 // Test 1 -> 7, 9, 2, 3
 
-int xStart[9] = {110, 110, 110, 110, 335, 335, 335, 335, 700};
+int xStart[9] = {110, 110, 110, 110, 345, 345, 345, 345, 650};
 int yStart[9] = {-210, -510, -810, -1110, -210, -510, -810, -1110, -1110};
 int xDest[10] = {1100, 875, 650, 1100, 875, 600, 1100, 875, 650, 1150};
 int yDest[10] = {-100, -100, -100, -325, -325, -325, -550, -550, -550, -800};
@@ -64,9 +64,9 @@ void setup() {
   stepperY.setMaxSpeed(2000);
   stepperX1.setMaxSpeed(2000);
   stepperX2.setMaxSpeed(2000);
-  stepperY.setAcceleration(81);
-  stepperX1.setAcceleration(81);
-  stepperX2.setAcceleration(81);
+  stepperY.setAcceleration(100);
+  stepperX1.setAcceleration(100);
+  stepperX2.setAcceleration(100);
   limitSwitchY.setDebounceTime(50); // set debounce time to 50 milliseconds
   limitSwitchX1.setDebounceTime(50); // set debounce time to 50 milliseconds
   limitSwitchX2.setDebounceTime(50); // set debounce time to 50 milliseconds
@@ -271,6 +271,7 @@ void loop() {
     delay(5000);                      // actuator will stop extending automatically when reaching the limit
 
   }
+int xStart[9] = {110, 100, 100, 100, 325, 325, 325, 325, 700};
 
   // Going back home
 
