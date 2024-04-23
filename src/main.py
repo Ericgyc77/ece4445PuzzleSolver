@@ -45,7 +45,7 @@ color_ranges = {
 ################################################ Executive Loop #######################################################
 
 last_sent = time.time()
-last_noColor = time.time()
+last_noticeUpdate = time.time()
 send_interval = 1                               # send every 1 seconds
 
 while True:
@@ -87,21 +87,29 @@ while True:
                     largest_rect = (x, y, w, h)
                 cv2.rectangle(frame, (x, y), (x + w, y + h), bbox_color, 2)  # Draw rectangle in bbox_color
                 colorDetected = True
-                # print("Color detected: " + str(color_name))
-                
-                # Check that send interval has elapsed before new color detection message is sent
-                if colorDetected and (float(time.time() - last_sent) > float(send_interval)):
-                    # Send and receive messages via serial
-                    print("Sent color name to Arduino!")
-                    serialComm.send_message(ser, str(color_name))
-                    response = serialComm.receive_message(ser)
-                    
-                    # Check for and print response from Arduino
-                    if response:
-                        print("Response from Arduino: " + str(response))
-                    # print("Color detected: " + str(color_name))
+                # if (float(time.time() - last_noticeUpdate) > float(send_interval)):
+                #     print("Attempting to send notice.")
+                #     notice = serialComm.receive_message(ser)
+                #     # Check for and print response from Arduino
+                #     if notice:
+                #         print("NOTICE: " + str(notice))       
+                #     last_noticeUpdate = time.time()     
 
-                    last_sent = time.time()     
+                # Check that send interval has elapsed before new color detection message is sent
+                if colorDetected:
+                    # Send and receive messages via serial
+                    request = serialComm.receive_message(ser)
+                    # Check for request for color signal from Arduino
+                    if (request == 'R'):
+                        serialComm.send_message(ser, str(color_name))
+                        print("Sent color " + str(color_name) + " to Arduino!")
+                        response = serialComm.receive_message(ser)
+                        # Check for and print response from Arduino
+                        if response:
+                            print("Response from Arduino: " + str(response))
+
+
+                           
                 
         if largest_rect is not None:
             x, y, w, h = largest_rect
@@ -118,6 +126,8 @@ while True:
             
             # Optionally, you can print or display the distance on the frame
             # print("Distance from center:", distance)
+
+        
             
     ################################################ End of HSV Algorithm ##################################################
 
