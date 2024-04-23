@@ -3,17 +3,10 @@ import numpy as np
 import time
 import serialComm  # Import the serial communication functions
 
-from util import create_mask
-from util import find_and_box_objects
-
 # Initialize serial communication
-# Use /dev/ttyACM0 for Raspberry Pi 4
-# Use COM3 for Eric's Laptop
 ser = serialComm.init_serial('/dev/ttyACM0', 9600)
 
 cap = cv2.VideoCapture(-1) # Webcam, needs to be changed from PC to laptop
-# cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
-# cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
 
 # Check if the camera is opened successfully
 if not cap.isOpened():
@@ -35,11 +28,6 @@ while True:
     if ret:
         print("Frame found!")
         break  # Exit the while loop if the frame is read successfully
-
-# Test program to identify singular pixel color using only hue value
-
-# 'lime': [((34, 255, 175), (74, 255, 255))],
-# 'red_wrap': [((171, 255, 255), (179, 255, 255)), (0, 0, 255)],
 
 # Define hue and value ranges for detection, ignoring saturation
 color_ranges = {
@@ -91,7 +79,7 @@ while True:
         # Find contours and draw bounding box for yellow objects
         contours, _ = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
         for contour in contours:
-            if cv2.contourArea(contour) > 100:  # Filter out small areas
+            if cv2.contourArea(contour) > 300:  # Filter out small areas
                 x, y, w, h = cv2.boundingRect(contour)
                 area = w * h
                 if area > largest_area:
@@ -113,21 +101,7 @@ while True:
                         print("Response from Arduino: " + str(response))
                     # print("Color detected: " + str(color_name))
 
-                    last_sent = time.time()
-        # if (time.time() - last_noColor > send_interval):
-        #     print("Should be getting a non-color response now!")
-        #     # serialComm.send_message(ser, "Communications test...")
-        #     nonColorResponse = serialComm.receive_message(ser)
-        #     if nonColorResponse:
-        #         print("Notice: " + nonColorResponse)
-        #     else:
-        #         print("No response from Arduino")
-        #     last_noColor = time.time()
-                    
-        # if not colorDetected and (time.time() - last_noColor > send_interval):
-        #     # print("No color detected in this frame.")
-        #     last_noColor = time.time()
-                
+                    last_sent = time.time()     
                 
         if largest_rect is not None:
             x, y, w, h = largest_rect
@@ -145,47 +119,8 @@ while True:
             # Optionally, you can print or display the distance on the frame
             # print("Distance from center:", distance)
             
-            ################################################ End of HSV Algorithm ##################################################
-            ######################################## Start of Robot Movement Calculation ###########################################
+    ################################################ End of HSV Algorithm ##################################################
 
-            
-            # calculate the distance that the robot arm needs to move to reach the puzzle piece
-            # translate the pixel distance from the camera's center to the puzzle piece into real-world measurements
-            # scaling the pixel distance by a factor that translates it to the actual distance on the puzzle board.
-            # add offset of camera to robot arm as a vector to the scaled pixel distance to get the total distance to move
-            
-            # Using cm as our real world units, assume everything is in cm unless stated otherwise
-            
-            # x move right 8cm
-            # y move up 5 cm
-            
-            # Beginning of scale factor
-            # Current Calibration -> 185.647 pixel distance translates to 4cm
-            # Scale factor = 46.41175 pixels/cm
-            
-            # Need to determine heading: 
-            # Right side of screen will be postive X, left will be negative
-            # FOrward positive, backward negative
-            
-            
-            # Variables defined TBD when real world measurements are made
-            scale_factor = 0.02154627       # scale factor to convert pixels to cm
-            offset_x = 8                    # Horizontal offset of the robot arm (cm)
-            offset_y = 5                    # Vertical offset of the robot arm (cm)
-            
-            # cx and cy represent absolute center of camera 
-            distance_x_in_pixels = frame_center_x - cx  # Center of camera x-coordinate in pixels
-            distance_y_in_pixels = frame_center_y - cy # Center of camera y-coordinate in pixels
-            
-            # Convert pixel distances to real-world units
-            distance_x_in_units = distance_x_in_pixels * scale_factor
-            distance_y_in_units = distance_y_in_pixels * scale_factor
-            
-            # Calculate the total distance the robot arm needs to move, including the offset
-            total_distance_x = distance_x_in_units + offset_x
-            total_distance_y = distance_y_in_units + offset_y
-            
-            ######################################## End of Robot Movement Calculation ###########################################
     ####################################################### DEBUG ########################################################
     
     hue_value = pixel_center[0] 
