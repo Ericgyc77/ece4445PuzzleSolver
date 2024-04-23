@@ -63,6 +63,8 @@ while True:
     # Define color ranges for detection
 
     colorDetected = False
+    largest_area = 0
+    largest_rect = None
     
     for color_name, ranges in color_ranges.items():
         mask = None
@@ -73,8 +75,8 @@ while True:
             else:
                 mask = cv2.bitwise_or(mask, temp_mask)
     
-        largest_area = 0
-        largest_rect = None
+        # largest_area = 0
+        # largest_rect = None
         
         # Find contours and draw bounding box for yellow objects
         contours, _ = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
@@ -85,44 +87,50 @@ while True:
                 if area > largest_area:
                     largest_area = area
                     largest_rect = (x, y, w, h)
-                cv2.rectangle(frame, (x, y), (x + w, y + h), bbox_color, 2)  # Draw rectangle in bbox_color
-                colorDetected = True
-                # if (float(time.time() - last_noticeUpdate) > float(send_interval)):
-                #     print("Attempting to send notice.")
-                #     notice = serialComm.receive_message(ser)
-                #     # Check for and print response from Arduino
-                #     if notice:
-                #         print("NOTICE: " + str(notice))       
-                #     last_noticeUpdate = time.time()     
+                    bbox_color_final = bbox_color
+                    color_final_name = color_name
+                    cv2.rectangle(frame, (x, y), (x + w, y + h), bbox_color, 2)  # Draw rectangle in bbox_color only if color is largest area so far
 
-                # Check that send interval has elapsed before new color detection message is sent
-                if colorDetected:
-                    # Send and receive messages via serial
-                    request = serialComm.receive_message(ser)
-                    # Check for request for color signal from Arduino
-                    if (request == 'R'):
-                        serialComm.send_message(ser, str(color_name))
-                        print("Sent color " + str(color_name) + " to Arduino!")
-                        response = serialComm.receive_message(ser)
-                        # Check for and print response from Arduino
-                        if response:
-                            print("Response from Arduino: " + str(response))
+    if largest_rect is not None:
+        x, y, w, h = largest_rect
+        center_x = x + w // 2               # find center of largest rectangle, flooring division 
+        center_y = y + h // 2
+    
+        # Draw a dot at the center of the largest bounding box
+        cv2.circle(frame, (center_x, center_y), 5, (0, 0, 255), -1)
+
+        cv2.rectangle(frame, (x, y), (x + w, y + h), bbox_color_final, 2)
+
+        colorDetected = True     
+
+        # Check that send interval has elapsed before new color detection message is sent
+        if colorDetected:
+            # Send and receive messages via serial
+            request = serialComm.receive_message(ser)
+            # Check for request for color signal from Arduino
+            if (request == 'R'):
+                serialComm.send_message(ser, str(color_final_name))
+                print("Sent color " + str(color_final_name) + " to Arduino!")
+                response = serialComm.receive_message(ser)
+                # Check for and print response from Arduino
+                if response:
+                    print("Response from Arduino: " + str(response))
 
 
                            
                 
-        if largest_rect is not None:
-            x, y, w, h = largest_rect
-            center_x = x + w // 2               # find center of largest rectangle, flooring division 
-            center_y = y + h // 2
+        # if largest_rect is not None:
+        #     x, y, w, h = largest_rect
+        #     center_x = x + w // 2               # find center of largest rectangle, flooring division 
+        #     center_y = y + h // 2
         
-            # Draw a dot at the center of the largest bounding box
-            cv2.circle(frame, (center_x, center_y), 5, (0, 0, 255), -1)
+        #     # Draw a dot at the center of the largest bounding box
+        #     cv2.circle(frame, (center_x, center_y), 5, (0, 0, 255), -1)
 
-            # Calculate the distance from the absolute center of the frame
-            frame_center_x = width // 2
-            frame_center_y = height // 2
-            distance = ((center_x - frame_center_x) ** 2 + (center_y - frame_center_y) ** 2) ** 0.5
+        #     # Calculate the distance from the absolute center of the frame
+        #     frame_center_x = width // 2
+        #     frame_center_y = height // 2
+        #     distance = ((center_x - frame_center_x) ** 2 + (center_y - frame_center_y) ** 2) ** 0.5
             
             # Optionally, you can print or display the distance on the frame
             # print("Distance from center:", distance)
