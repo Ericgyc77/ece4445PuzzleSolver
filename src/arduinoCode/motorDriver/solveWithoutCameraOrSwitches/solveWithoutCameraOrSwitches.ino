@@ -44,15 +44,15 @@ bool startUpX2;
 
 // Test 1 -> 7, 9, 2, 3
 
-int xStart[9] = {100, 100, 100, 100, 325, 325, 325, 325, 700};
-int yStart[9] = {-200, -500, -800, -1100, -200, -500, -800, -1100, -1100};
+int xStart[9] = {110, 110, 110, 110, 335, 335, 335, 335, 700};
+int yStart[9] = {-210, -510, -810, -1110, -210, -510, -810, -1110, -1110};
 int xDest[10] = {1100, 875, 650, 1100, 875, 600, 1100, 875, 650, 1150};
 int yDest[10] = {-100, -100, -100, -325, -325, -325, -550, -550, -550, -800};
 int destinationIndicie = 9;
 
 // Predefined colors
 String predefinedColors[9] = {"violet", "yellow", "orange", "blue",
- "red", "magenta", "cyan", "darkGreen", "limeGreen"};
+ "red", "magenta", "cyan", "dark_green", "lime_green"};
 
 // the setup function runs once when you press reset or power the board
 void setup() {
@@ -64,9 +64,9 @@ void setup() {
   stepperY.setMaxSpeed(2000);
   stepperX1.setMaxSpeed(2000);
   stepperX2.setMaxSpeed(2000);
-  stepperY.setAcceleration(49);
-  stepperX1.setAcceleration(49);
-  stepperX2.setAcceleration(49);
+  stepperY.setAcceleration(81);
+  stepperX1.setAcceleration(81);
+  stepperX2.setAcceleration(81);
   limitSwitchY.setDebounceTime(50); // set debounce time to 50 milliseconds
   limitSwitchX1.setDebounceTime(50); // set debounce time to 50 milliseconds
   limitSwitchX2.setDebounceTime(50); // set debounce time to 50 milliseconds
@@ -210,7 +210,7 @@ void loop() {
     // Sanity Check + Grab destination indicie based on color
     Serial.println("Checking destination indicie!");
     destinationIndicie = pollColor();
-    delay(1000);                        // Account for any transmission delays
+//    delay(1000);                        // Account for any transmission delays
 
     // Move y to the REAL start
     stepperY.moveTo(yStart[i]);              
@@ -231,12 +231,12 @@ void loop() {
     digitalWrite(IN2_PIN, LOW);         // actuator will stop extending automatically when reaching the limit
     delay(2000);                        // delay to let the actuator go all the way down before suction
     digitalWrite(SOL_PIN, HIGH);        // Start suction
-    delay(4000);                        // Wait for 4 seconds before going up to secure peice
+    delay(3000);                        // Wait for 4 seconds before going up to secure peice
 
     // retracts the actuator
     digitalWrite(IN1_PIN, LOW);
     digitalWrite(IN2_PIN, HIGH);        // actuator will stop extending automatically when reaching the limit
-    delay(5000);                        // Let actuator go all the way up and pause
+    delay(4000);                        // Let actuator go all the way up and pause
 
     // Move with the piece in y direction to the destination
     stepperY.moveTo(yDest[destinationIndicie]);              
@@ -244,7 +244,7 @@ void loop() {
     delay(1000);
     stepperY.stop();
 
-    delay(1000);                        // Delay for debug purposes
+//    delay(1000);                        // Delay for debug purposes
 
     // Move with the piece in x direction to the destination 
     stepperX1.moveTo(-1*xDest[destinationIndicie]);
@@ -255,14 +255,14 @@ void loop() {
       if(stepperX2.distanceToGo() != 0) { stepperX2.run(); }
     }
 
-    delay(1000);                      // Delay for debug purposes
+//    delay(1000);                      // Delay for debug purposes
 
     // extend the actuator
     digitalWrite(IN1_PIN, HIGH);
     digitalWrite(IN2_PIN, LOW);
     delay(2000);                      // actuator will stop extending automatically when reaching the limit
 
-    delay(4000);                      // Hold the piece for 4 seconds 
+    delay(3000);                      // Hold the piece for 4 seconds 
     digitalWrite(SOL_PIN, LOW);       // Stop suction, drop piece
 
     // retracts the actuator
