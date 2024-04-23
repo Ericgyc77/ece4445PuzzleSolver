@@ -104,6 +104,7 @@ while True:
                 # Check that send interval has elapsed before new color detection message is sent
                 if colorDetected and (float(time.time() - last_sent) > float(send_interval)):
                     # Send and receive messages via serial
+                    print("Sent color name to Arduino!")
                     serialComm.send_message(ser, str(color_name))
                     response = serialComm.receive_message(ser)
                     
@@ -113,10 +114,15 @@ while True:
                     # print("Color detected: " + str(color_name))
 
                     last_sent = time.time()
-
-        nonColorResponse = serialComm.receive_message(ser)
-        if nonColorResponse:
-            print("Notice: " + nonColorResponse)
+        # if (time.time() - last_noColor > send_interval):
+        #     print("Should be getting a non-color response now!")
+        #     # serialComm.send_message(ser, "Communications test...")
+        #     nonColorResponse = serialComm.receive_message(ser)
+        #     if nonColorResponse:
+        #         print("Notice: " + nonColorResponse)
+        #     else:
+        #         print("No response from Arduino")
+        #     last_noColor = time.time()
                     
         # if not colorDetected and (time.time() - last_noColor > send_interval):
         #     # print("No color detected in this frame.")

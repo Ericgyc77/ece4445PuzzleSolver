@@ -5,12 +5,9 @@ void setup() {
 }
 
 void loop() {
+  Serial.println("Starting loop!!!");
   // Check if data is available to read.
   if (Serial.available() > 0) {
-    while(Serial.available() > 0) {
-      Serial.read();
-    }
-    // Read and wait for new data to arrive
     delay(10);
     String receivedColor = Serial.readStringUntil('\n');
     
@@ -18,9 +15,8 @@ void loop() {
     Serial.print("Color detected: ");
     Serial.println(receivedColor);
   }
-  else {
-    Serial.println("No data recieved.");
-  }
+  
+  delay(1000);
 }
 
 /////////////////////////////////////////////////// DEBUG/PROOF OF CONCEPT CODE ////////////////////////////////////////////////
@@ -43,6 +39,3 @@ void loop() {
 // }
 
 /////////////////////////////////////////////////// DEBUG/PROOF OF CONCEPT CODE ////////////////////////////////////////////////
-
-
-
